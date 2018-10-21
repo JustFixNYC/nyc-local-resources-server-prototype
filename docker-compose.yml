@@ -1,0 +1,23 @@
+version: '2'
+services:
+  app:
+    build: .
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      - DATABASE_URL=postgis://geofun_user@db/geofun
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    links:
+      - db
+  db:
+    image: mdillon/postgis
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=geofun
+      - POSTGRES_USER=geofun_user
+volumes:
+  pgdata:
