@@ -37,3 +37,10 @@ Then visit http://localhost:8000.
 
 There's a `package.json` in the root directory, but it's optional, as it just
 includes optional typings for use with TypeScript's JS checking mode.
+
+## Data provenance
+
+Data was originally exported from the following sources.
+
+* `nyc/data/nyc_zipcodes` - https://justfixnyc.carto.com/tables/nyc_zipcodes/public/map
+* `world/data` - http://thematicmapping.org/downloads/world_borders.php
