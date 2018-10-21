@@ -1,15 +1,32 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
-integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
-crossorigin="">
+{% if best_resource %}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+        integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+        crossorigin="">
+  {{ js_params|json_script:"js-params" }}
+{% endif %}
 {% load static %}
 <link rel="stylesheet" href="{% static 'styles.css' %}">
-{{ js_params|json_script:"js-params" }}
-<title>Geo fun</title>
-<h1>Geo fun</h1>
-<div id="map"></div>
-<script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
-   integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
-   crossorigin=""></script>
-<script src="{% static 'main.js' %}"></script>
+<title>Tenant resource search</title>
+<h1>Tenant resource search</h1>
+<form method="GET" action=".">
+  <label for="address">Address</label>
+  <input type="text" id="address" name="address" value="{{ address }}">
+  <button type="submit">Search for tenant resources</button>
+</form>
+<br>
+{% if georesult %}
+<p>Searching for tenant resources near <strong>{{ georesult.properties.label }}</strong>.</p>
+  {% if best_resource %}
+    <p>The closest resource is <strong>{{ best_resource.name }}</strong> at {{ best_resource.address }}.</p>
+    <p>Its catchment area is highlighted in blue.</p>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
+            integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
+            crossorigin=""></script>
+    <script src="{% static 'main.js' %}"></script>
+  {% else %}
+    <p>Alas, no tenant resources were found.</p>
+  {% endif %}
+{% endif %}

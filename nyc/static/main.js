@@ -22,10 +22,16 @@ const jsParams = getJsParams();
 const map = L.map('map').setView(jsParams.origin, 13);
 
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-  attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
   maxZoom: 18,
   id: 'mapbox.streets',
   accessToken: jsParams.mapboxAccessToken
 }).addTo(map);
 
 L.geoJSON(jsParams.area).addTo(map);
+
+const originMarker = L.marker(jsParams.origin).addTo(map);
+const targetMarker = L.marker(jsParams.target).addTo(map);
+
+// TODO: Escape the text, looks like it's evaluated as HTML.
+originMarker.bindPopup(jsParams.originName);
+targetMarker.bindPopup(jsParams.targetName).openPopup();
