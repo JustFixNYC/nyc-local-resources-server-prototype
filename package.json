@@ -1,0 +1,14 @@
+{
+  "name": "postgis-fun",
+  "version": "1.0.0",
+  "description": "This is some experimentation with PostGIS and GeoDjango.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/leaflet": "^1.2.11"
+  }
+}

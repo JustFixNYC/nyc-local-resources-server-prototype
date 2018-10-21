@@ -16,6 +16,10 @@ Including another URLconf
 from django.contrib.gis import admin
 from django.urls import path
 
+import nyc.views
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', nyc.views.index),
 ]
