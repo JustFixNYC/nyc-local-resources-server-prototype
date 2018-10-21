@@ -21,6 +21,10 @@ class Zipcode(models.Model):
     postalcode = models.CharField(max_length=5)
     latitude = models.FloatField()
     longitude = models.FloatField()
+
+    # TODO: I don't actually know if this needs to
+    # be a MultiPolygonField, but I decided to use it
+    # instead of a PolygonField just in case.
     geom = models.MultiPolygonField(srid=4326)
 
     def __str__(self):
