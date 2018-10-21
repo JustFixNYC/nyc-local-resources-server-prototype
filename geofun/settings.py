@@ -120,3 +120,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+GEOCODING_SEARCH_URL = "https://geosearch.planninglabs.nyc/v1/search"
+
+GEOCODING_TIMEOUT = 3

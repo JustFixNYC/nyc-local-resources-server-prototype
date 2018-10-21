@@ -9,7 +9,6 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/* \
   && rm -rf /src/*.deb
 
-RUN pip install \
-  django==2.1.2 \
-  dj-database-url \
-  psycopg2-binary
+COPY requirements.txt /app/requirements.txt
+
+RUN pip install -r /app/requirements.txt
