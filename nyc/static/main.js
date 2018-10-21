@@ -4,7 +4,7 @@
  * Get the JS params for this page that were given to us by
  * our back-end and embedded in the page.
  * 
- * @returns {JsParams}
+ * @returns {import('./js-params').JsParams}
  */
 function getJsParams() {
   const id = 'js-params';
@@ -27,3 +27,5 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
   id: 'mapbox.streets',
   accessToken: jsParams.mapboxAccessToken
 }).addTo(map);
+
+L.geoJSON(jsParams.area).addTo(map);
