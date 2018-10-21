@@ -7,6 +7,7 @@ services:
     working_dir: /app
     environment:
       - DATABASE_URL=postgis://geofun_user@db/geofun
+      - PYTHONUNBUFFERED=yup
     command: python manage.py runserver 0.0.0.0:8000
     ports:
       - 8000:8000
