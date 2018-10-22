@@ -2,8 +2,6 @@ import json
 from django.shortcuts import render
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry, Point
-from django.contrib.gis.db.models.functions import Distance
-from django.contrib.gis.measure import D
 
 from .models import Zipcode, TenantResource
 from . import geocoding
@@ -18,10 +16,10 @@ def index(request):
     if georesults:
         georesult = georesults[0]
         longitude, latitude = georesult.geometry.coordinates
-        origin = Point(longitude, latitude, srid=4326)
-        resources = TenantResource.objects.filter(
-            catchment_area__contains=Point(longitude, latitude),
-        ).annotate(distance=Distance('geocoded_point', origin)).order_by('distance')
+        resources = TenantResource.objects.find_best_for(
+            latitude=latitude,
+            longitude=longitude
+        )
         if resources:
             best_resource = resources.first()
             js_params = {

@@ -1,5 +1,6 @@
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import GEOSGeometry, Point
+from django.contrib.gis.db.models.functions import Distance
 
 from . import geocoding
 
@@ -52,6 +53,14 @@ zipcode_mapping = {
 }
 
 
+class TenantResourceManager(models.Manager):
+    def find_best_for(self, latitude: float, longitude: float):
+        origin = Point(longitude, latitude, srid=4326)
+        return self.filter(
+            catchment_area__contains=Point(longitude, latitude),
+        ).annotate(distance=Distance('geocoded_point', origin)).order_by('distance')
+
+
 class TenantResource(models.Model):
     name = models.CharField(max_length=100)
     address = models.TextField()
@@ -62,6 +71,8 @@ class TenantResource(models.Model):
     geocoded_longitude = models.FloatField(default=0.0)
     geocoded_point = models.PointField(null=True, blank=True, srid=4326)
     catchment_area = models.MultiPolygonField(null=True, blank=True, srid=4326)
+
+    objects = TenantResourceManager()
 
     def __str__(self):
         return self.name
