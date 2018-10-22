@@ -1,5 +1,5 @@
 from django.contrib.gis.db import models
-from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.geos import GEOSGeometry, Point
 
 from . import geocoding
 
@@ -60,6 +60,7 @@ class TenantResource(models.Model):
     geocoded_address = models.TextField(blank=True)
     geocoded_latitude = models.FloatField(default=0.0)
     geocoded_longitude = models.FloatField(default=0.0)
+    geocoded_point = models.PointField(null=True, blank=True, srid=4326)
     catchment_area = models.MultiPolygonField(null=True, blank=True, srid=4326)
 
     def __str__(self):
@@ -73,6 +74,7 @@ class TenantResource(models.Model):
             longitude, latitude = result.geometry.coordinates
             self.geocoded_latitude = latitude
             self.geocoded_longitude = longitude
+            self.geocoded_point = Point(longitude, latitude)
 
     def update_catchment_area(self):
         total_area = GEOSGeometry('POINT EMPTY', srid=4326)
@@ -82,6 +84,6 @@ class TenantResource(models.Model):
         self.catchment_area = total_area
 
     def save(self, *args, **kwargs):
-        if self.address != self.geocoded_address:
+        if self.address != self.geocoded_address or not self.geocoded_point:
             self.update_geocoded_info()
         super().save(*args, **kwargs)

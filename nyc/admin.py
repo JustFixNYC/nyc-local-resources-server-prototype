@@ -11,7 +11,8 @@ class ZipcodeAdmin(admin.GeoModelAdmin):
 @admin.register(TenantResource)
 class TenantResourceAdmin(admin.GeoModelAdmin):
     autocomplete_fields = ['zipcodes']
-    readonly_fields = ['geocoded_address', 'geocoded_latitude', 'geocoded_longitude']
+    readonly_fields = [
+        'geocoded_address', 'geocoded_latitude', 'geocoded_longitude', 'geocoded_point']
 
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)

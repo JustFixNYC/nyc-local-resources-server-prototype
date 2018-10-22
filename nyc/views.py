@@ -2,6 +2,8 @@ import json
 from django.shortcuts import render
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry, Point
+from django.contrib.gis.db.models.functions import Distance
+from django.contrib.gis.measure import D
 
 from .models import Zipcode, TenantResource
 from . import geocoding
@@ -16,11 +18,11 @@ def index(request):
     if georesults:
         georesult = georesults[0]
         longitude, latitude = georesult.geometry.coordinates
+        origin = Point(longitude, latitude, srid=4326)
         resources = TenantResource.objects.filter(
-            catchment_area__contains=Point(longitude, latitude)
-        )
+            catchment_area__contains=Point(longitude, latitude),
+        ).annotate(distance=Distance('geocoded_point', origin)).order_by('distance')
         if resources:
-            # TODO: Actually find the closest resource.
             best_resource = resources.first()
             js_params = {
                 'mapboxAccessToken': settings.MAPBOX_ACCESS_TOKEN,
