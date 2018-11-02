@@ -28,6 +28,19 @@ class Borough(models.Model):
         return self.name
 
 
+class Neighborhood(models.Model):
+    class Meta:
+        ordering = ['name', 'county']
+        unique_together = ('name', 'county')
+
+    name = models.CharField(max_length=50)
+    county = models.CharField(max_length=20)
+    geom = models.MultiPolygonField(srid=4326)
+
+    def __str__(self):
+        return f"{self.name} ({self.county})"
+
+
 class TenantResourceManager(models.Manager):
     def find_best_for(self, latitude: float, longitude: float):
         origin = Point(longitude, latitude, srid=4326)
@@ -39,8 +52,9 @@ class TenantResourceManager(models.Manager):
 class TenantResource(models.Model):
     name = models.CharField(max_length=100)
     address = models.TextField()
-    zipcodes = models.ManyToManyField(Zipcode)
-    boroughs = models.ManyToManyField(Borough)
+    zipcodes = models.ManyToManyField(Zipcode, blank=True)
+    boroughs = models.ManyToManyField(Borough, blank=True)
+    neighborhoods = models.ManyToManyField(Neighborhood, blank=True)
 
     geocoded_address = models.TextField(blank=True)
     geocoded_latitude = models.FloatField(default=0.0)
@@ -69,6 +83,8 @@ class TenantResource(models.Model):
             total_area = total_area.union(zipcode.geom)
         for borough in self.boroughs.all():
             total_area = total_area.union(borough.geom)
+        for hood in self.neighborhoods.all():
+            total_area = total_area.union(hood.geom)
         self.catchment_area = total_area
 
     def save(self, *args, **kwargs):
