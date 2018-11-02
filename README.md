@@ -43,4 +43,5 @@ includes optional typings for use with TypeScript's JS checking mode.
 Data was originally exported from the following sources.
 
 * `nyc/data/ZIP_CODE_040114` - https://data.cityofnewyork.us/Business/Zip-Code-Boundaries/i8iw-xf4u
+* `nyc/data/Borough-Boundaries.geojson` - https://data.cityofnewyork.us/City-Government/Borough-Boundaries/tqmj-j8zm
 * `world/data` - http://thematicmapping.org/downloads/world_borders.php

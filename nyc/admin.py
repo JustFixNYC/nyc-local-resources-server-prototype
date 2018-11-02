@@ -1,11 +1,16 @@
 from django.contrib.gis import admin
-from .models import Zipcode, TenantResource
+from .models import Zipcode, Borough, TenantResource
 
 
 @admin.register(Zipcode)
 class ZipcodeAdmin(admin.GeoModelAdmin):
     list_display = ['zipcode']
     search_fields = ['zipcode']
+
+
+@admin.register(Borough)
+class BoroughAdmin(admin.GeoModelAdmin):
+    list_display = ['code', 'name']
 
 
 @admin.register(TenantResource)

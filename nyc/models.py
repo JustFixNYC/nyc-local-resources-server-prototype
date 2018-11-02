@@ -16,10 +16,16 @@ class Zipcode(models.Model):
         return self.zipcode
 
 
-zipcode_mapping = {
-    'zipcode': 'ZIPCODE',
-    'geom': 'POLYGON',
-}
+class Borough(models.Model):
+    class Meta:
+        ordering = ['code']
+
+    code = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=20, unique=True)
+    geom = models.MultiPolygonField(srid=4326)
+
+    def __str__(self):
+        return self.name
 
 
 class TenantResourceManager(models.Manager):
@@ -34,6 +40,7 @@ class TenantResource(models.Model):
     name = models.CharField(max_length=100)
     address = models.TextField()
     zipcodes = models.ManyToManyField(Zipcode)
+    boroughs = models.ManyToManyField(Borough)
 
     geocoded_address = models.TextField(blank=True)
     geocoded_latitude = models.FloatField(default=0.0)
@@ -60,6 +67,8 @@ class TenantResource(models.Model):
         total_area = GEOSGeometry('POINT EMPTY', srid=4326)
         for zipcode in self.zipcodes.all():
             total_area = total_area.union(zipcode.geom)
+        for borough in self.boroughs.all():
+            total_area = total_area.union(borough.geom)
         self.catchment_area = total_area
 
     def save(self, *args, **kwargs):
