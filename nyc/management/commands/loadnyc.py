@@ -20,7 +20,7 @@ def get_or_construct(model, **kwargs):
 
 
 class Command(BaseCommand):
-    help = 'Loads NYC zipcodes into the database.'
+    help = 'Loads NYC geographic data into the database.'
 
     @transaction.atomic
     def handle(self, *args, **options):
