@@ -4,8 +4,8 @@ from .models import Zipcode, TenantResource
 
 @admin.register(Zipcode)
 class ZipcodeAdmin(admin.GeoModelAdmin):
-    list_display = ['postalcode', 'po_name', 'borough']
-    search_fields = ['postalcode']
+    list_display = ['zipcode']
+    search_fields = ['zipcode']
 
 
 @admin.register(TenantResource)
