@@ -1,5 +1,5 @@
 from django.contrib.gis import admin
-from .models import Zipcode, Borough, Neighborhood, TenantResource
+from .models import Zipcode, Borough, Neighborhood, CommunityDistrict, TenantResource
 
 
 @admin.register(Zipcode)
@@ -19,9 +19,15 @@ class NeighborhoodAdmin(admin.GeoModelAdmin):
     search_fields = ['name']
 
 
+@admin.register(CommunityDistrict)
+class CommunityDistrictAdmin(admin.GeoModelAdmin):
+    list_display = ['boro_cd', 'name']
+    search_fields = ['name']
+
+
 @admin.register(TenantResource)
 class TenantResourceAdmin(admin.GeoModelAdmin):
-    autocomplete_fields = ['zipcodes', 'neighborhoods']
+    autocomplete_fields = ['zipcodes', 'neighborhoods', 'community_districts']
     readonly_fields = [
         'geocoded_address', 'geocoded_latitude', 'geocoded_longitude', 'geocoded_point']
 

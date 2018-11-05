@@ -44,5 +44,6 @@ Data was originally exported from the following sources.
 
 * `nyc/data/ZIP_CODE_040114` - https://data.cityofnewyork.us/Business/Zip-Code-Boundaries/i8iw-xf4u
 * `nyc/data/Borough-Boundaries.geojson` - https://data.cityofnewyork.us/City-Government/Borough-Boundaries/tqmj-j8zm
+* `nyc/data/Community-Districts.geojson` - https://data.cityofnewyork.us/City-Government/Community-Districts/yfnk-k7r4
 * `nyc/data/ZillowNeighborhoods-NY` - https://www.zillow.com/howto/api/neighborhood-boundaries.htm
 * `world/data` - http://thematicmapping.org/downloads/world_borders.php

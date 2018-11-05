@@ -1,8 +1,15 @@
 from django.contrib.gis.db import models
-from django.contrib.gis.geos import GEOSGeometry, Point
+from django.contrib.gis.geos import GEOSGeometry, Point, Polygon, MultiPolygon
 from django.contrib.gis.db.models.functions import Distance
 
 from . import geocoding
+
+
+def to_multipolygon(geos_geom):
+    if isinstance(geos_geom, Polygon):
+        return MultiPolygon(geos_geom)
+    assert isinstance(geos_geom, MultiPolygon)
+    return geos_geom
 
 
 class Zipcode(models.Model):
@@ -41,6 +48,51 @@ class Neighborhood(models.Model):
         return f"{self.name} ({self.county})"
 
 
+class CommunityDistrict(models.Model):
+    class Meta:
+        ordering = ['boro_cd']
+
+    boro_cd = models.CharField(max_length=3, primary_key=True)
+    name = models.CharField(max_length=80)
+    geom = models.MultiPolygonField(srid=4326)
+
+    BOROUGHS = {
+        '1': 'Manhattan',
+        '2': 'Bronx',
+        '3': 'Brooklyn',
+        '4': 'Queens',
+        '5': 'Staten Island'
+    }
+
+    # https://www1.nyc.gov/site/planning/community/jias-sources.page
+    JOINT_INTEREST_AREAS = {
+        '164': 'Central Park',
+        '226': 'Van Cortlandt Park',
+        '227': 'Bronx Park',
+        '228': 'Pelham Bay Park',
+        '355': 'Prospect Park',
+        '356': 'Brooklyn Gateway National Recreation Area',
+        '480': 'LaGuardia Airport',
+        '481': 'Flushing Meadows-Corona Park',
+        '482': 'Forest Park',
+        '483': 'JFK International Airport',
+        '484': 'Queens Gateway National Recreation Area',
+        '595': 'S.I. Gateway National Recreation Area'
+    }
+
+    @classmethod
+    def boro_cd_to_name(cls, boro_cd: str) -> str:
+        borough = cls.BOROUGHS[boro_cd[0]]
+        num = int(boro_cd[1:])
+        jia = cls.JOINT_INTEREST_AREAS.get(boro_cd)
+        if jia:
+            return f'{borough} JIA {num} ({jia})'
+        return f'{borough} CD {num}'
+
+    def __str__(self):
+        return self.name
+
+
 class TenantResourceManager(models.Manager):
     def find_best_for(self, latitude: float, longitude: float):
         origin = Point(longitude, latitude, srid=4326)
@@ -55,6 +107,7 @@ class TenantResource(models.Model):
     zipcodes = models.ManyToManyField(Zipcode, blank=True)
     boroughs = models.ManyToManyField(Borough, blank=True)
     neighborhoods = models.ManyToManyField(Neighborhood, blank=True)
+    community_districts = models.ManyToManyField(CommunityDistrict, blank=True)
 
     geocoded_address = models.TextField(blank=True)
     geocoded_latitude = models.FloatField(default=0.0)
@@ -85,7 +138,12 @@ class TenantResource(models.Model):
             total_area = total_area.union(borough.geom)
         for hood in self.neighborhoods.all():
             total_area = total_area.union(hood.geom)
-        self.catchment_area = total_area
+        for cd in self.community_districts.all():
+            total_area = total_area.union(cd.geom)
+        if isinstance(total_area, Point):
+            self.catchment_area = None
+        else:
+            self.catchment_area = to_multipolygon(total_area)
 
     def save(self, *args, **kwargs):
         if self.address != self.geocoded_address or not self.geocoded_point:

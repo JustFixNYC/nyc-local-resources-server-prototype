@@ -6,26 +6,21 @@ from django.contrib.gis.gdal import DataSource
 from django.contrib.gis.geos import MultiPolygon, Polygon
 
 from nyc import models
-from nyc.models import Zipcode, Borough, Neighborhood
+from nyc.models import (
+    Zipcode, Borough, Neighborhood, CommunityDistrict, to_multipolygon)
 
 
 DATA_DIR = Path(models.__file__).parent.resolve() / 'data'
 ZIPCODE_SHAPEFILE = DATA_DIR / 'ZIP_CODE_040114' / 'ZIP_CODE_040114.shp'
 BOROUGH_SHAPEFILE = DATA_DIR / 'Borough-Boundaries.geojson'
 NEIGHBORHOOD_SHAPEFILE = DATA_DIR / 'ZillowNeighborhoods-NY' / 'ZillowNeighborhoods-NY.shp'
+COMMUNITY_DISTRICT_SHAPEFILE = DATA_DIR / 'Community-Districts.geojson'
 
 def get_or_construct(model, **kwargs):
     instance = model.objects.filter(**kwargs).first()
     if instance is None:
         instance = model(**kwargs)
     return instance
-
-
-def to_multipolygon(geos_geom):
-    if isinstance(geos_geom, Polygon):
-        return MultiPolygon(geos_geom)
-    assert isinstance(geos_geom, MultiPolygon)
-    return geos_geom
 
 
 class Command(BaseCommand):
@@ -35,7 +30,22 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.load_zipcodes()
         self.load_neighborhoods()
+        self.load_community_districts()
         self.load_boroughs()
+
+    def load_community_districts(self):
+        ds = DataSource(str(COMMUNITY_DISTRICT_SHAPEFILE))
+        layer = ds[0]
+        for feature in layer:
+            boro_cd = str(feature['boro_cd'])
+            name = CommunityDistrict.boro_cd_to_name(boro_cd)
+            instance = get_or_construct(CommunityDistrict, boro_cd=boro_cd)
+            geom = feature.geom
+            geom.transform(4326)
+            instance.geom = to_multipolygon(geom.geos)
+            instance.name = name
+            print(f"Saving {instance.name}.")
+            instance.save()
 
     def load_neighborhoods(self):
         ds = DataSource(str(NEIGHBORHOOD_SHAPEFILE))
