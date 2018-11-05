@@ -1,4 +1,5 @@
-This is some experimentation with PostGIS and GeoDjango.
+This is a prototype for a new Tenant Assistance Directory using
+PostGIS and GeoDjango.
 
 ## Quick start
 
@@ -20,7 +21,6 @@ Then, once inside the shell, run:
 
 ```
 python manage.py migrate
-python manage.py loadworld
 python manage.py loadnyc
 ```
 
@@ -46,4 +46,3 @@ Data was originally exported from the following sources.
 * `nyc/data/Borough-Boundaries.geojson` - https://data.cityofnewyork.us/City-Government/Borough-Boundaries/tqmj-j8zm
 * `nyc/data/Community-Districts.geojson` - https://data.cityofnewyork.us/City-Government/Community-Districts/yfnk-k7r4
 * `nyc/data/ZillowNeighborhoods-NY` - https://www.zillow.com/howto/api/neighborhood-boundaries.htm
-* `world/data` - http://thematicmapping.org/downloads/world_borders.php
