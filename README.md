@@ -1,5 +1,11 @@
 This is a prototype for a new Tenant Assistance Directory using
-PostGIS and GeoDjango.
+PostGIS and GeoDjango. It explores ways to create a successor to
+[JustFixNYC/nyc-local-resources][] that is easier to maintain.
+
+More details are available in the [google doc][].
+
+[JustFixNYC/nyc-local-resources]: https://github.com/JustFixNYC/nyc-local-resources
+[google doc]: https://docs.google.com/document/d/14tt58eGfZ1WZlF7_tPPxJldJqd3s41vskkBby3kwC5A/edit
 
 ## Quick start
 
