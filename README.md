@@ -31,6 +31,13 @@ python manage.py migrate
 python manage.py loadnyc
 ```
 
+You will also probably want to create a superuser so
+you can log into the admin UI and create tenant resources:
+
+```
+python manage.py createsuperuser
+```
+
 Then exit the shell and start everything up:
 
 ```
